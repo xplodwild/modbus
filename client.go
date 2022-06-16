@@ -432,6 +432,21 @@ func (mb *client) ReadFIFOQueue(address uint16) (results []byte, err error) {
 	return
 }
 
+func (mb *client) RequestCANOpen(canFrame []byte) (results []byte, err error) {
+	request := ProtocolDataUnit{
+		FunctionCode: FuncCodeCANOpen,
+		Data: append([]byte{
+			0x0D, // MEI Type 13 (Ox0D) is a MODBUS Assigned Number for the CANopen General Reference
+		}, canFrame...),
+	}
+	response, err := mb.send(&request)
+	if err != nil {
+		return
+	}
+	results = response.Data
+	return
+}
+
 // Helpers
 
 // send sends request and checks possible exception in the response.
